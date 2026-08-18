@@ -38,7 +38,7 @@ export function UploadButton({ albumId, slug }: UploadButtonProps) {
 
     if (validFiles.length === 0) {
       setError(
-        "Solo podemos guardar imágenes (JPEG, PNG, WebP, HEIC, GIF) de hasta 10 MB.",
+        "Solo podemos guardar imágenes (JPEG, PNG, WebP, HEIC, GIF) de hasta 50 MB.",
       );
       if (inputRef.current) inputRef.current.value = "";
       return;

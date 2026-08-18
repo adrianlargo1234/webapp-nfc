@@ -7,7 +7,7 @@ export function publicMediaUrl(path: string): string {
 
 export const MEDIA_BUCKET = BUCKET;
 
-export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+export const MAX_IMAGE_BYTES = 50 * 1024 * 1024;
 
 export const ACCEPTED_IMAGE_TYPES = [
   "image/jpeg",
