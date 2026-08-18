@@ -9,6 +9,7 @@ import {
   MEDIA_BUCKET,
   extensionFromMimeType,
 } from "@/lib/storage";
+import { compressImage } from "@/lib/image-compression";
 
 type UploadButtonProps = {
   albumId: string;
@@ -50,16 +51,27 @@ export function UploadButton({ albumId, slug }: UploadButtonProps) {
     const supabase = createClient();
 
     for (const file of validFiles) {
-      const ext = extensionFromMimeType(file.type);
+      // Comprimir imagen automáticamente
+      let compressedFile: File;
+      try {
+        compressedFile = await compressImage(file);
+      } catch {
+        setError("No se pudo procesar la imagen. Inténtalo de nuevo.");
+        setUploading(false);
+        setProgress(null);
+        return;
+      }
+
+      const ext = extensionFromMimeType(compressedFile.type);
       const path = `${albumId}/${crypto.randomUUID()}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from(MEDIA_BUCKET)
-        .upload(path, file, { contentType: file.type });
+        .upload(path, compressedFile, { contentType: compressedFile.type });
 
       if (!uploadError) {
         try {
-          await registerMedia(albumId, slug, path, file.type);
+          await registerMedia(albumId, slug, path, compressedFile.type);
         } catch {
           setError("Alguna foto no se pudo guardar. Inténtalo de nuevo.");
         }
