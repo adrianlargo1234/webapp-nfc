@@ -55,13 +55,15 @@ export async function createAlbum(
       break;
     }
 
+    console.error("Supabase insert error:", error);
+
     if (error.code === "23505") {
       attempt += 1;
       slug = `${baseSlug}-${randomSuffix()}`;
       continue;
     }
 
-    return { error: "No se pudo crear el álbum. Inténtalo de nuevo." };
+    return { error: `No se pudo crear el álbum. Error: ${error.message}` };
   }
 
   if (!insertedSlug) {
