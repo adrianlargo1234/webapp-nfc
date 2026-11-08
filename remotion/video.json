@@ -1,74 +1,134 @@
 {
-  "audio": null,
-  "captionsFile": null,
+  "audio": "video/voz.mp3",
+  "captionsFile": "video/captions.json",
   "highlight": [],
   "scenes": [
     {
-      "duration": 3,
-      "title": "Tu nevera acaba de *volverse* digital.",
-      "visual": { "type": "icon", "emoji": "🧲", "badge": "NFC · sin app" },
-      "say": "Tu nevera acaba de volverse *digital*."
+      "duration": 2.98,
+      "title": "Tus fotos de *Japón*…",
+      "visual": {
+        "type": "icon",
+        "emoji": "📱",
+        "badge": "galería del móvil"
+      },
+      "say": "Tus fotos de *Japón* mueren en la galería del móvil."
     },
     {
-      "duration": 3.2,
+      "duration": 1.75,
+      "title": "…nadie las *vuelve* a abrir",
+      "visual": {
+        "type": "icon",
+        "emoji": "🖼️",
+        "strike": true
+      },
+      "say": "Nadie las vuelve a *abrir*."
+    },
+    {
+      "duration": 2.42,
+      "title": "Pero la *nevera*…",
+      "visual": {
+        "type": "icon",
+        "emoji": "🧊",
+        "badge": "la abres a diario"
+      },
+      "say": "Pero la *nevera* la abres todos los días."
+    },
+    {
+      "duration": 3.43,
       "title": "Se llama *Album NFC*",
-      "visual": { "type": "icon", "emoji": "📱", "badge": "acerca el móvil" },
-      "say": "Se llama *Album* NFC: acercas el móvil al imán"
+      "visual": {
+        "type": "icon",
+        "emoji": "🧲",
+        "badge": "imán + NFC"
+      },
+      "say": "Así que pegamos el viaje a la nevera, con un imán *NFC*."
     },
     {
-      "duration": 3,
-      "title": "Sin *login* · sin app",
-      "visual": { "type": "icon", "emoji": "🔐", "strike": true },
-      "stamp": "GRATIS",
-      "say": "y se abre al momento. Sin *login*, sin instalar nada."
+      "duration": 3.7,
+      "step": 1,
+      "title": "Acerca el *móvil*",
+      "visual": {
+        "type": "icon",
+        "emoji": "📲",
+        "badge": "se abre el álbum"
+      },
+      "stamp": "SIN APP",
+      "say": "Acercas el móvil y se abre el álbum. Sin app y sin *login*."
     },
     {
-      "duration": 3.4,
+      "duration": 3.53,
+      "step": 2,
       "title": "Un álbum por *país*",
       "visual": {
         "type": "grid",
         "items": [
-          { "emoji": "🇯🇵", "label": "Japón" },
-          { "emoji": "🇮🇹", "label": "Italia" },
-          { "emoji": "🇲🇽", "label": "México" },
-          { "emoji": "🇵🇹", "label": "Portugal" },
-          { "emoji": "🇹🇭", "label": "Tailandia" },
-          { "emoji": "🇬🇷", "label": "Grecia" }
+          {
+            "emoji": "🇯🇵",
+            "label": "Japón"
+          },
+          {
+            "emoji": "🇮🇹",
+            "label": "Italia"
+          },
+          {
+            "emoji": "🇲🇽",
+            "label": "México"
+          },
+          {
+            "emoji": "🇵🇹",
+            "label": "Portugal"
+          },
+          {
+            "emoji": "🇹🇭",
+            "label": "Tailandia"
+          },
+          {
+            "emoji": "🇬🇷",
+            "label": "Grecia"
+          }
         ]
       },
-      "say": "Cada imán es un *álbum*: uno por cada país que visitas."
+      "say": "Cada imán es un *país*: Japón, Italia, México."
     },
     {
-      "duration": 3.6,
-      "step": 1,
-      "title": "Fotos *compartidas*",
+      "duration": 3.13,
+      "step": 3,
+      "title": "Fotos de *todos*",
       "visual": {
         "type": "list",
-        "header": "ÁLBUM · JAPÓN · 128 FOTOS",
-        "items": ["Templo Senso-ji", "Ramen en Shibuya", "Monte Fuji", "Tren bala", "Kioto de noche", "Nara y los ciervos"]
-      },
-      "say": "Toda la familia sube sus *fotos* al mismo álbum."
-    },
-    {
-      "duration": 3.4,
-      "step": 2,
-      "title": "Rápido de *verdad*",
-      "visual": {
-        "type": "bars",
-        "header": "SUBIDA · FOTO COMPRIMIDA",
-        "bars": [
-          { "label": "TAMAÑO", "value": 85 },
-          { "label": "CALIDAD", "value": 92 },
-          { "label": "VELOCIDAD", "value": 97 }
+        "header": "ÁLBUM · JAPÓN · FOTOS",
+        "items": [
+          "Templo Senso-ji · Ana",
+          "Ramen en Shibuya · Luis",
+          "Monte Fuji · mamá",
+          "Tren bala · Ana",
+          "Kioto de noche · papá",
+          "Nara y los ciervos · Luis"
         ]
       },
-      "say": "Se comprimen solas, así que suben en *segundos*."
+      "say": "Y quien tenga el imán sube sus fotos al *mismo* álbum."
     },
     {
-      "duration": 3.4,
-      "title": "¿Lo *quieres*?",
-      "visual": { "type": "cover", "text": "TU VIAJE EN UN IMÁN", "caption": "Album NFC · link en la bio", "emoji": "✈️" },
-      "say": "Tu viaje, en un *imán*. Link en la bio."
+      "duration": 3.45,
+      "step": 4,
+      "title": "Ligeras de *verdad*",
+      "visual": {
+        "type": "icon",
+        "emoji": "🗜️",
+        "badge": "se comprimen en el móvil"
+      },
+      "say": "Las fotos se *comprimen* en el propio móvil antes de subir."
+    },
+    {
+      "duration": 2.47,
+      "title": "Tu viaje, en la *nevera*",
+      "visual": {
+        "type": "cover",
+        "text": "IMÁN = ÁLBUM",
+        "caption": "Tus fotos de Japón, pegadas a la nevera",
+        "emoji": "🧲"
+      },
+      "say": "¿Quieres el tuyo? *Link* en la bio."
     }
   ]
 }

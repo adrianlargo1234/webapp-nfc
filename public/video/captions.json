@@ -1,0 +1,597 @@
+[
+  {
+    "text": " Tus",
+    "startMs": 40,
+    "endMs": 289,
+    "timestampMs": 165,
+    "confidence": null
+  },
+  {
+    "text": " fotos",
+    "startMs": 289,
+    "endMs": 591,
+    "timestampMs": 440,
+    "confidence": null
+  },
+  {
+    "text": " de",
+    "startMs": 591,
+    "endMs": 787,
+    "timestampMs": 689,
+    "confidence": null
+  },
+  {
+    "text": " *Japón*",
+    "startMs": 787,
+    "endMs": 1112,
+    "timestampMs": 950,
+    "confidence": null
+  },
+  {
+    "text": " mueren",
+    "startMs": 1112,
+    "endMs": 1416,
+    "timestampMs": 1264,
+    "confidence": null
+  },
+  {
+    "text": " en",
+    "startMs": 1416,
+    "endMs": 1629,
+    "timestampMs": 1522,
+    "confidence": null
+  },
+  {
+    "text": " la",
+    "startMs": 1629,
+    "endMs": 1826,
+    "timestampMs": 1727,
+    "confidence": null
+  },
+  {
+    "text": " galería",
+    "startMs": 1826,
+    "endMs": 2104,
+    "timestampMs": 1965,
+    "confidence": null
+  },
+  {
+    "text": " del",
+    "startMs": 2104,
+    "endMs": 2332,
+    "timestampMs": 2218,
+    "confidence": null
+  },
+  {
+    "text": " móvil.",
+    "startMs": 2332,
+    "endMs": 2605,
+    "timestampMs": 2468,
+    "confidence": null
+  },
+  {
+    "text": " Nadie",
+    "startMs": 3020,
+    "endMs": 3310,
+    "timestampMs": 3165,
+    "confidence": null
+  },
+  {
+    "text": " las",
+    "startMs": 3310,
+    "endMs": 3578,
+    "timestampMs": 3444,
+    "confidence": null
+  },
+  {
+    "text": " vuelve",
+    "startMs": 3578,
+    "endMs": 3900,
+    "timestampMs": 3739,
+    "confidence": null
+  },
+  {
+    "text": " a",
+    "startMs": 3900,
+    "endMs": 4082,
+    "timestampMs": 3991,
+    "confidence": null
+  },
+  {
+    "text": " *abrir.*",
+    "startMs": 4082,
+    "endMs": 4359,
+    "timestampMs": 4221,
+    "confidence": null
+  },
+  {
+    "text": " Pero",
+    "startMs": 4770,
+    "endMs": 5012,
+    "timestampMs": 4891,
+    "confidence": null
+  },
+  {
+    "text": " la",
+    "startMs": 5012,
+    "endMs": 5212,
+    "timestampMs": 5112,
+    "confidence": null
+  },
+  {
+    "text": " *nevera*",
+    "startMs": 5212,
+    "endMs": 5489,
+    "timestampMs": 5351,
+    "confidence": null
+  },
+  {
+    "text": " la",
+    "startMs": 5489,
+    "endMs": 5689,
+    "timestampMs": 5589,
+    "confidence": null
+  },
+  {
+    "text": " abres",
+    "startMs": 5689,
+    "endMs": 5981,
+    "timestampMs": 5835,
+    "confidence": null
+  },
+  {
+    "text": " todos",
+    "startMs": 5981,
+    "endMs": 6278,
+    "timestampMs": 6129,
+    "confidence": null
+  },
+  {
+    "text": " los",
+    "startMs": 6278,
+    "endMs": 6526,
+    "timestampMs": 6402,
+    "confidence": null
+  },
+  {
+    "text": " días.",
+    "startMs": 6526,
+    "endMs": 6778,
+    "timestampMs": 6652,
+    "confidence": null
+  },
+  {
+    "text": " Así",
+    "startMs": 7190,
+    "endMs": 7426,
+    "timestampMs": 7308,
+    "confidence": null
+  },
+  {
+    "text": " que",
+    "startMs": 7426,
+    "endMs": 7655,
+    "timestampMs": 7540,
+    "confidence": null
+  },
+  {
+    "text": " pegamos",
+    "startMs": 7655,
+    "endMs": 8004,
+    "timestampMs": 7830,
+    "confidence": null
+  },
+  {
+    "text": " el",
+    "startMs": 8004,
+    "endMs": 8208,
+    "timestampMs": 8106,
+    "confidence": null
+  },
+  {
+    "text": " viaje",
+    "startMs": 8208,
+    "endMs": 8504,
+    "timestampMs": 8356,
+    "confidence": null
+  },
+  {
+    "text": " a",
+    "startMs": 8504,
+    "endMs": 8675,
+    "timestampMs": 8589,
+    "confidence": null
+  },
+  {
+    "text": " la",
+    "startMs": 8675,
+    "endMs": 8879,
+    "timestampMs": 8777,
+    "confidence": null
+  },
+  {
+    "text": " nevera,",
+    "startMs": 8879,
+    "endMs": 9077,
+    "timestampMs": 8978,
+    "confidence": null
+  },
+  {
+    "text": " con",
+    "startMs": 9077,
+    "endMs": 9357,
+    "timestampMs": 9217,
+    "confidence": null
+  },
+  {
+    "text": " un",
+    "startMs": 9357,
+    "endMs": 9578,
+    "timestampMs": 9468,
+    "confidence": null
+  },
+  {
+    "text": " imán",
+    "startMs": 9578,
+    "endMs": 9849,
+    "timestampMs": 9713,
+    "confidence": null
+  },
+  {
+    "text": " *NFC.*",
+    "startMs": 9849,
+    "endMs": 10211,
+    "timestampMs": 10030,
+    "confidence": null
+  },
+  {
+    "text": " Acercas",
+    "startMs": 10620,
+    "endMs": 11011,
+    "timestampMs": 10816,
+    "confidence": null
+  },
+  {
+    "text": " el",
+    "startMs": 11011,
+    "endMs": 11219,
+    "timestampMs": 11115,
+    "confidence": null
+  },
+  {
+    "text": " móvil",
+    "startMs": 11219,
+    "endMs": 11508,
+    "timestampMs": 11364,
+    "confidence": null
+  },
+  {
+    "text": " y",
+    "startMs": 11508,
+    "endMs": 11680,
+    "timestampMs": 11594,
+    "confidence": null
+  },
+  {
+    "text": " se",
+    "startMs": 11680,
+    "endMs": 11906,
+    "timestampMs": 11793,
+    "confidence": null
+  },
+  {
+    "text": " abre",
+    "startMs": 11906,
+    "endMs": 12146,
+    "timestampMs": 12026,
+    "confidence": null
+  },
+  {
+    "text": " el",
+    "startMs": 12146,
+    "endMs": 12354,
+    "timestampMs": 12250,
+    "confidence": null
+  },
+  {
+    "text": " álbum.",
+    "startMs": 12354,
+    "endMs": 12652,
+    "timestampMs": 12503,
+    "confidence": null
+  },
+  {
+    "text": " Sin",
+    "startMs": 12652,
+    "endMs": 12928,
+    "timestampMs": 12790,
+    "confidence": null
+  },
+  {
+    "text": " app",
+    "startMs": 12928,
+    "endMs": 13139,
+    "timestampMs": 13033,
+    "confidence": null
+  },
+  {
+    "text": " y",
+    "startMs": 13139,
+    "endMs": 13311,
+    "timestampMs": 13225,
+    "confidence": null
+  },
+  {
+    "text": " sin",
+    "startMs": 13311,
+    "endMs": 13588,
+    "timestampMs": 13450,
+    "confidence": null
+  },
+  {
+    "text": " *login.*",
+    "startMs": 13588,
+    "endMs": 13906,
+    "timestampMs": 13747,
+    "confidence": null
+  },
+  {
+    "text": " Cada",
+    "startMs": 14320,
+    "endMs": 14727,
+    "timestampMs": 14524,
+    "confidence": null
+  },
+  {
+    "text": " imán",
+    "startMs": 14727,
+    "endMs": 15153,
+    "timestampMs": 14940,
+    "confidence": null
+  },
+  {
+    "text": " es",
+    "startMs": 15153,
+    "endMs": 15494,
+    "timestampMs": 15324,
+    "confidence": null
+  },
+  {
+    "text": " un",
+    "startMs": 15494,
+    "endMs": 15842,
+    "timestampMs": 15668,
+    "confidence": null
+  },
+  {
+    "text": " *país:*",
+    "startMs": 15842,
+    "endMs": 16203,
+    "timestampMs": 16023,
+    "confidence": null
+  },
+  {
+    "text": " Japón,",
+    "startMs": 16203,
+    "endMs": 16606,
+    "timestampMs": 16404,
+    "confidence": null
+  },
+  {
+    "text": " Italia,",
+    "startMs": 16606,
+    "endMs": 16923,
+    "timestampMs": 16764,
+    "confidence": null
+  },
+  {
+    "text": " México.",
+    "startMs": 16923,
+    "endMs": 17442,
+    "timestampMs": 17183,
+    "confidence": null
+  },
+  {
+    "text": " Y",
+    "startMs": 17850,
+    "endMs": 18010,
+    "timestampMs": 17930,
+    "confidence": null
+  },
+  {
+    "text": " quien",
+    "startMs": 18010,
+    "endMs": 18313,
+    "timestampMs": 18162,
+    "confidence": null
+  },
+  {
+    "text": " tenga",
+    "startMs": 18313,
+    "endMs": 18587,
+    "timestampMs": 18450,
+    "confidence": null
+  },
+  {
+    "text": " el",
+    "startMs": 18587,
+    "endMs": 18781,
+    "timestampMs": 18684,
+    "confidence": null
+  },
+  {
+    "text": " imán",
+    "startMs": 18781,
+    "endMs": 19036,
+    "timestampMs": 18908,
+    "confidence": null
+  },
+  {
+    "text": " sube",
+    "startMs": 19036,
+    "endMs": 19277,
+    "timestampMs": 19156,
+    "confidence": null
+  },
+  {
+    "text": " sus",
+    "startMs": 19277,
+    "endMs": 19532,
+    "timestampMs": 19404,
+    "confidence": null
+  },
+  {
+    "text": " fotos",
+    "startMs": 19532,
+    "endMs": 19829,
+    "timestampMs": 19680,
+    "confidence": null
+  },
+  {
+    "text": " al",
+    "startMs": 19829,
+    "endMs": 20021,
+    "timestampMs": 19925,
+    "confidence": null
+  },
+  {
+    "text": " *mismo*",
+    "startMs": 20021,
+    "endMs": 20293,
+    "timestampMs": 20157,
+    "confidence": null
+  },
+  {
+    "text": " álbum.",
+    "startMs": 20293,
+    "endMs": 20570,
+    "timestampMs": 20431,
+    "confidence": null
+  },
+  {
+    "text": " Las",
+    "startMs": 20980,
+    "endMs": 21233,
+    "timestampMs": 21107,
+    "confidence": null
+  },
+  {
+    "text": " fotos",
+    "startMs": 21233,
+    "endMs": 21548,
+    "timestampMs": 21390,
+    "confidence": null
+  },
+  {
+    "text": " se",
+    "startMs": 21548,
+    "endMs": 21770,
+    "timestampMs": 21659,
+    "confidence": null
+  },
+  {
+    "text": " *comprimen*",
+    "startMs": 21770,
+    "endMs": 22197,
+    "timestampMs": 21983,
+    "confidence": null
+  },
+  {
+    "text": " en",
+    "startMs": 22197,
+    "endMs": 22419,
+    "timestampMs": 22308,
+    "confidence": null
+  },
+  {
+    "text": " el",
+    "startMs": 22419,
+    "endMs": 22624,
+    "timestampMs": 22522,
+    "confidence": null
+  },
+  {
+    "text": " propio",
+    "startMs": 22624,
+    "endMs": 22956,
+    "timestampMs": 22790,
+    "confidence": null
+  },
+  {
+    "text": " móvil",
+    "startMs": 22956,
+    "endMs": 23241,
+    "timestampMs": 23098,
+    "confidence": null
+  },
+  {
+    "text": " antes",
+    "startMs": 23241,
+    "endMs": 23532,
+    "timestampMs": 23386,
+    "confidence": null
+  },
+  {
+    "text": " de",
+    "startMs": 23532,
+    "endMs": 23736,
+    "timestampMs": 23634,
+    "confidence": null
+  },
+  {
+    "text": " subir.",
+    "startMs": 23736,
+    "endMs": 24018,
+    "timestampMs": 23877,
+    "confidence": null
+  },
+  {
+    "text": " ¿Quieres",
+    "startMs": 24430,
+    "endMs": 24855,
+    "timestampMs": 24643,
+    "confidence": null
+  },
+  {
+    "text": " el",
+    "startMs": 24855,
+    "endMs": 25097,
+    "timestampMs": 24976,
+    "confidence": null
+  },
+  {
+    "text": " tuyo?",
+    "startMs": 25097,
+    "endMs": 25387,
+    "timestampMs": 25242,
+    "confidence": null
+  },
+  {
+    "text": " *Link*",
+    "startMs": 25387,
+    "endMs": 25700,
+    "timestampMs": 25544,
+    "confidence": null
+  },
+  {
+    "text": " en",
+    "startMs": 25700,
+    "endMs": 25963,
+    "timestampMs": 25831,
+    "confidence": null
+  },
+  {
+    "text": " la",
+    "startMs": 25963,
+    "endMs": 26205,
+    "timestampMs": 26084,
+    "confidence": null
+  },
+  {
+    "text": " bio.",
+    "startMs": 26205,
+    "endMs": 26487,
+    "timestampMs": 26346,
+    "confidence": null
+  }
+]

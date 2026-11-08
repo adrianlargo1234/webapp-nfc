@@ -46,3 +46,17 @@ Tipos de `visual`:
 Sin audio (`"audio": null`), los subtítulos se generan a partir de `say`, repartidos en la duración de cada escena.
 
 Las fuentes (Poppins, Instrument Serif y JetBrains Mono, licencia OFL) están en `public/video/fonts`, así que se renderiza sin conexión.
+
+## Voz sintética (sin grabar)
+
+`npm run video:tts` lee cada `say` de `video.json` con espeak-ng + MBROLA (`apt-get install espeak-ng mbrola mbrola-es4`), crea `public/video/voz.mp3`, `captions.json` y `captions.srt`, y ajusta la `duration` de cada escena a su frase. Voz y velocidad: `TTS_VOICE=mb-es4 TTS_SPEED=165`.
+
+En `captions.json` una palabra escrita `*así*` se resalta siempre (también puedes editar a mano los subtítulos de Whisper).
+
+## Skills de YouTube
+
+En `.claude/skills/` están las 11 skills de [youtube-agent-skill](https://github.com/Jakeschincariol/youtube-agent-skill) (MIT, commit a2feb21). Para este vídeo se usaron:
+
+- `/yt-script`: gancho elegido con `hookscore.py` (61, WORKABLE, fórmula The Insider). Puntúa en inglés, así que se evalúa la traducción.
+- `/yt-package`: título «Tus fotos de Japón, pegadas a la nevera» + portada «IMÁN = ÁLBUM» (94/100).
+- `/yt-edit`: `python3 .claude/skills/yt-edit/deadair.py public/video/captions.srt` → 0 silencios que cortar.

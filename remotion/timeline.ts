@@ -104,13 +104,15 @@ export const wordsFromCaptions = (captions: Caption[], highlight: string[]): Wor
     if (!startsWord) {
       // Trozo de la palabra anterior (Whisper parte algunas palabras en tokens).
       const last = words[words.length - 1];
-      last.text += raw.trim();
+      last.text += raw.trim().replace(/\*/g, "");
       last.endMs = c.endMs;
-      last.highlight = set.has(normalize(last.text));
+      last.highlight = last.highlight || set.has(normalize(last.text));
       continue;
     }
-    const text = raw.trim();
-    words.push({ text, startMs: c.startMs, endMs: c.endMs, highlight: set.has(normalize(text)) });
+    // Una palabra marcada *así* en el JSON de subtítulos se resalta siempre.
+    const marked = raw.includes("*");
+    const text = raw.trim().replace(/\*/g, "");
+    words.push({ text, startMs: c.startMs, endMs: c.endMs, highlight: marked || set.has(normalize(text)) });
   }
   return words;
 };

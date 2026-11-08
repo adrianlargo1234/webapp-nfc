@@ -13,9 +13,10 @@ export const TikTokVideo: React.FC<VideoProps> = ({ audio, scenes, captions, hig
   const { fps } = useVideoConfig();
   const timeline = useMemo(() => buildTimeline(scenes, fps), [scenes, fps]);
   const pages = useMemo(() => {
-    const words = captions?.length
-      ? wordsFromCaptions(captions, [...highlight, ...starredWords(scenes)])
-      : wordsFromScenes(scenes);
+    if (!captions?.length) return buildPages(wordsFromScenes(scenes));
+    // Si los subtítulos ya traen palabras marcadas con *, no se adivina a partir de `say`.
+    const marked = captions.some((c) => c.text.includes("*"));
+    const words = wordsFromCaptions(captions, marked ? highlight : [...highlight, ...starredWords(scenes)]);
     return buildPages(words);
   }, [captions, highlight, scenes]);
 
