@@ -1,0 +1,74 @@
+{
+  "audio": null,
+  "captionsFile": null,
+  "highlight": [],
+  "scenes": [
+    {
+      "duration": 3,
+      "title": "Tu nevera acaba de *volverse* digital.",
+      "visual": { "type": "icon", "emoji": "🧲", "badge": "NFC · sin app" },
+      "say": "Tu nevera acaba de volverse *digital*."
+    },
+    {
+      "duration": 3.2,
+      "title": "Se llama *Album NFC*",
+      "visual": { "type": "icon", "emoji": "📱", "badge": "acerca el móvil" },
+      "say": "Se llama *Album* NFC: acercas el móvil al imán"
+    },
+    {
+      "duration": 3,
+      "title": "Sin *login* · sin app",
+      "visual": { "type": "icon", "emoji": "🔐", "strike": true },
+      "stamp": "GRATIS",
+      "say": "y se abre al momento. Sin *login*, sin instalar nada."
+    },
+    {
+      "duration": 3.4,
+      "title": "Un álbum por *país*",
+      "visual": {
+        "type": "grid",
+        "items": [
+          { "emoji": "🇯🇵", "label": "Japón" },
+          { "emoji": "🇮🇹", "label": "Italia" },
+          { "emoji": "🇲🇽", "label": "México" },
+          { "emoji": "🇵🇹", "label": "Portugal" },
+          { "emoji": "🇹🇭", "label": "Tailandia" },
+          { "emoji": "🇬🇷", "label": "Grecia" }
+        ]
+      },
+      "say": "Cada imán es un *álbum*: uno por cada país que visitas."
+    },
+    {
+      "duration": 3.6,
+      "step": 1,
+      "title": "Fotos *compartidas*",
+      "visual": {
+        "type": "list",
+        "header": "ÁLBUM · JAPÓN · 128 FOTOS",
+        "items": ["Templo Senso-ji", "Ramen en Shibuya", "Monte Fuji", "Tren bala", "Kioto de noche", "Nara y los ciervos"]
+      },
+      "say": "Toda la familia sube sus *fotos* al mismo álbum."
+    },
+    {
+      "duration": 3.4,
+      "step": 2,
+      "title": "Rápido de *verdad*",
+      "visual": {
+        "type": "bars",
+        "header": "SUBIDA · FOTO COMPRIMIDA",
+        "bars": [
+          { "label": "TAMAÑO", "value": 85 },
+          { "label": "CALIDAD", "value": 92 },
+          { "label": "VELOCIDAD", "value": 97 }
+        ]
+      },
+      "say": "Se comprimen solas, así que suben en *segundos*."
+    },
+    {
+      "duration": 3.4,
+      "title": "¿Lo *quieres*?",
+      "visual": { "type": "cover", "text": "TU VIAJE EN UN IMÁN", "caption": "Album NFC · link en la bio", "emoji": "✈️" },
+      "say": "Tu viaje, en un *imán*. Link en la bio."
+    }
+  ]
+}
