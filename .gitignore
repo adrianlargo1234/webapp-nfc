@@ -60,3 +60,6 @@ supabase/.branches
 # OS
 .AppleDouble
 .LSOverride
+
+# whisper.cpp (binario y modelos)
+/whisper.cpp
