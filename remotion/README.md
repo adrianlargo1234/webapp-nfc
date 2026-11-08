@@ -49,7 +49,7 @@ Las fuentes (Poppins, Instrument Serif y JetBrains Mono, licencia OFL) están en
 
 ## Voz sintética (sin grabar)
 
-`npm run video:tts` lee cada `say` de `video.json` con espeak-ng + MBROLA (`apt-get install espeak-ng mbrola mbrola-es4`), crea `public/video/voz.mp3`, `captions.json` y `captions.srt`, y ajusta la `duration` de cada escena a su frase. Voz y velocidad: `TTS_VOICE=mb-es4 TTS_SPEED=165`.
+`npm run video:tts` lee cada `say` de `video.json` con la voz española de SVOX Pico (`apt-get install libttspico-utils`), quita los silencios de los extremos, la acelera un poco sin cambiar el tono (`TTS_TEMPO=1.12`) y crea `public/video/voz.mp3`, `captions.json` y `captions.srt`. Ajusta la `duration` de cada escena a su frase, y cada trozo entre comas o puntos se sincroniza con su tramo de voz. `TTS_ENGINE=espeak` usa espeak-ng (peor calidad).
 
 En `captions.json` una palabra escrita `*así*` se resalta siempre (también puedes editar a mano los subtítulos de Whisper).
 
