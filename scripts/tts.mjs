@@ -1,8 +1,13 @@
 // Genera la voz de remotion/video.json y sus subtítulos palabra a palabra.
 //
-//   npm run video:tts                  ElevenLabs si hay ELEVENLABS_API_KEY (en .env.local),
-//                                      si no, SVOX Pico (voz local, suena robótica)
-//   TTS_ENGINE=elevenlabs|pico|espeak  para forzar uno
+//   npm run video:tts                  Azure si hay AZURE_SPEECH_KEY, si no ElevenLabs si hay
+//                                      ELEVENLABS_API_KEY (ambas en .env.local), si no SVOX Pico
+//                                      (voz local, suena robótica)
+//   TTS_ENGINE=azure|elevenlabs|pico|espeak  para forzar uno
+//
+// Azure (barata, capa gratis): AZURE_SPEECH_KEY, AZURE_SPEECH_REGION, AZURE_SPEECH_VOICE
+// (es-ES-AlvaroNeural), AZURE_SPEECH_RATE (+12%), AZURE_SPEECH_PITCH, AZURE_SPEECH_STYLE.
+// Devuelve el tiempo de cada palabra, así que los subtítulos salen exactos sin Whisper.
 //
 // ElevenLabs (voz tipo TikTok): ELEVENLABS_API_KEY, ELEVENLABS_VOICE_ID (voz de tu Voice Library),
 // ELEVENLABS_MODEL (eleven_multilingual_v2 por defecto), ELEVENLABS_SPEED (1.1). Devuelve el tiempo
@@ -16,13 +21,17 @@ import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { azureConfigFromEnv, speakAzure } from "./tts-azure.mjs";
 
-const engine = process.env.TTS_ENGINE ?? (process.env.ELEVENLABS_API_KEY ? "elevenlabs" : "pico");
+const engine =
+  process.env.TTS_ENGINE ??
+  (process.env.AZURE_SPEECH_KEY ? "azure" : process.env.ELEVENLABS_API_KEY ? "elevenlabs" : "pico");
 const voice = process.env.TTS_VOICE ?? (engine === "pico" ? "es-ES" : "es");
 const speed = process.env.TTS_SPEED ?? "165";
 const tempo = process.env.TTS_TEMPO ?? "1.12";
 // Pausa tras cada frase (s). ElevenLabs ya deja un respiro al final de cada clip.
-const GAP = Number(process.env.TTS_GAP ?? (engine === "elevenlabs" ? 0.08 : 0.3));
+const neural = engine === "elevenlabs" || engine === "azure";
+const GAP = Number(process.env.TTS_GAP ?? (neural ? 0.08 : 0.3));
 const eleven = {
   key: process.env.ELEVENLABS_API_KEY,
   // "Adam", voz masculina prediseñada. Para acento de España elige una en la Voice Library.
@@ -34,6 +43,12 @@ if (engine === "elevenlabs" && !eleven.key) {
   console.error("Falta ELEVENLABS_API_KEY (ponla en .env.local).");
   process.exit(1);
 }
+const azure = azureConfigFromEnv();
+if (engine === "azure" && (!azure.key || !azure.region)) {
+  console.error("Faltan AZURE_SPEECH_KEY y/o AZURE_SPEECH_REGION (ponlas en .env.local).");
+  process.exit(1);
+}
+const azureSdk = engine === "azure" ? await import("microsoft-cognitiveservices-speech-sdk") : null;
 
 const root = process.cwd();
 const configPath = path.join(root, "remotion", "video.json");
@@ -145,10 +160,13 @@ for (const [i, scene] of config.scenes.entries()) {
   const plain = tokens.map((t) => t.text).join(" ");
   const clip = path.join(tmp, `scene-${i}.wav`);
 
-  if (engine === "elevenlabs") {
+  if (neural) {
     const prev = config.scenes[i - 1];
     const next = config.scenes[i + 1];
-    const words = await speakEleven(plain, clip, prev && plainText(prev.say), next && plainText(next.say));
+    const words =
+      engine === "azure"
+        ? await speakAzure(plain, clip, azure, azureSdk.default ?? azureSdk)
+        : await speakEleven(plain, clip, prev && plainText(prev.say), next && plainText(next.say));
     const clipDur = duration(clip);
     if (words.length === tokens.length) {
       tokens.forEach((tok, j) => pushCaption(tok, words[j][0], words[j][1]));
@@ -244,6 +262,6 @@ config.captionsFile = "video/captions.json";
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n");
 fs.rmSync(tmp, { recursive: true, force: true });
 
-console.log(`Voz: public/video/voz.mp3 (${offset.toFixed(2)} s, ${engine === "elevenlabs" ? `elevenlabs ${eleven.voiceId}` : `${engine} ${voice}`})`);
+console.log(`Voz: public/video/voz.mp3 (${offset.toFixed(2)} s, ${engine === "elevenlabs" ? `elevenlabs ${eleven.voiceId}` : engine === "azure" ? `azure ${azure.voice}` : `${engine} ${voice}`})`);
 console.log(`Escenas alineadas por frases: ${aligned}/${config.scenes.length}`);
 console.log(`Subtítulos: public/video/captions.json y captions.srt (${captions.length} palabras)`);

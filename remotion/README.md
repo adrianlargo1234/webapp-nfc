@@ -47,7 +47,21 @@ Sin audio (`"audio": null`), los subtítulos se generan a partir de `say`, repar
 
 Las fuentes (Poppins, Instrument Serif y JetBrains Mono, licencia OFL) están en `public/video/fonts`, así que se renderiza sin conexión.
 
-## Voz con IA (ElevenLabs, como en los TikToks de referencia)
+## Voz con IA barata (Azure Speech, recomendado)
+
+Voces neuronales de Microsoft con capa gratuita mensual (de sobra para estos vídeos) y tiempo exacto de cada palabra, así que los subtítulos salen sin Whisper.
+
+1. En portal.azure.com → *Crear un recurso* → **Speech** (Servicios de IA de Azure). Plan de tarifa **Free F0**, región p. ej. *West Europe*.
+2. En el recurso → *Claves y punto de conexión*: copia la **Clave 1** y la **Ubicación/Región** a `.env.local` (no se sube a git):
+   ```
+   AZURE_SPEECH_KEY=tu_clave
+   AZURE_SPEECH_REGION=westeurope
+   ```
+3. `npm run video:tts` y `npm run video:render`.
+
+Voz por defecto: `es-ES-AlvaroNeural` (masculina, España) a `+12%` de velocidad. Para cambiarla: `AZURE_SPEECH_VOICE` (escúchalas en la *Voice Gallery* de Speech Studio; p. ej. `es-ES-ElviraNeural`, o las multilingües `…MultilingualNeural`, más expresivas), `AZURE_SPEECH_RATE` (`+20%` para más ritmo), `AZURE_SPEECH_PITCH` y `AZURE_SPEECH_STYLE` (solo si la voz admite estilos).
+
+## Voz con IA premium (ElevenLabs)
 
 1. Saca tu API key en elevenlabs.io → Profile → API Keys y ponla en `.env.local` (no se sube a git):
    ```
@@ -55,9 +69,9 @@ Las fuentes (Poppins, Instrument Serif y JetBrains Mono, licencia OFL) están en
    ELEVENLABS_VOICE_ID=id_de_la_voz   # opcional
    ```
 2. Elige la voz en la Voice Library: filtra por idioma **Spanish**, acento **Spain** y estilo *social media* / *narrative*, añádela a "My Voices" y copia su ID. Sin `ELEVENLABS_VOICE_ID` usa "Adam" (masculina, con algo de acento inglés).
-3. `npm run video:tts` y `npm run video:render`.
+3. `npm run video:tts` y `npm run video:render` (si también tienes clave de Azure, fuerza ElevenLabs con `TTS_ENGINE=elevenlabs`).
 
-El script pide cada escena con el texto de la anterior y la siguiente como contexto (la entonación fluye), usa los tiempos por letra que devuelve ElevenLabs para los subtítulos (exactos, sin Whisper) y ajusta la `duration` de cada escena. Ajustes: `ELEVENLABS_SPEED` (1.1 por defecto, máx. 1.2), `ELEVENLABS_MODEL` (`eleven_multilingual_v2`; `eleven_v3` es más expresivo). Este vídeo gasta unos 500 caracteres.
+El script pide cada escena con el texto de la anterior y la siguiente como contexto (la entonación fluye), usa los tiempos por letra que devuelve ElevenLabs para los subtítulos (exactos, sin Whisper) y ajusta la `duration` de cada escena. Ajustes: `ELEVENLABS_SPEED` (1.1 por defecto, máx. 1.2), `ELEVENLABS_MODEL` (`eleven_multilingual_v2`; `eleven_v3` es más expresivo). Este vídeo gasta unos 500 caracteres; `ELEVENLABS_MODEL=eleven_flash_v2_5` gasta la mitad de créditos.
 
 Sin clave, `npm run video:tts` usa SVOX Pico en local (`apt-get install libttspico-utils`): sirve para probar, pero suena robótica.
 
