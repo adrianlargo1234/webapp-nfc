@@ -11,7 +11,7 @@
     "video:studio": "remotion studio remotion/index.ts",
     "video:render": "remotion render remotion/index.ts TikTok out/tiktok.mp4",
     "video:transcribe": "node scripts/transcribe.mjs",
-    "video:tts": "node scripts/tts.mjs"
+    "video:tts": "node --env-file-if-exists=.env.local scripts/tts.mjs"
   },
   "dependencies": {
     "@remotion/captions": "^4.0.541",

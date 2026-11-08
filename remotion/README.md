@@ -47,9 +47,19 @@ Sin audio (`"audio": null`), los subtítulos se generan a partir de `say`, repar
 
 Las fuentes (Poppins, Instrument Serif y JetBrains Mono, licencia OFL) están en `public/video/fonts`, así que se renderiza sin conexión.
 
-## Voz sintética (sin grabar)
+## Voz con IA (ElevenLabs, como en los TikToks de referencia)
 
-`npm run video:tts` lee cada `say` de `video.json` con la voz española de SVOX Pico (`apt-get install libttspico-utils`), quita los silencios de los extremos, la acelera un poco sin cambiar el tono (`TTS_TEMPO=1.12`) y crea `public/video/voz.mp3`, `captions.json` y `captions.srt`. Ajusta la `duration` de cada escena a su frase, y cada trozo entre comas o puntos se sincroniza con su tramo de voz. `TTS_ENGINE=espeak` usa espeak-ng (peor calidad).
+1. Saca tu API key en elevenlabs.io → Profile → API Keys y ponla en `.env.local` (no se sube a git):
+   ```
+   ELEVENLABS_API_KEY=tu_clave
+   ELEVENLABS_VOICE_ID=id_de_la_voz   # opcional
+   ```
+2. Elige la voz en la Voice Library: filtra por idioma **Spanish**, acento **Spain** y estilo *social media* / *narrative*, añádela a "My Voices" y copia su ID. Sin `ELEVENLABS_VOICE_ID` usa "Adam" (masculina, con algo de acento inglés).
+3. `npm run video:tts` y `npm run video:render`.
+
+El script pide cada escena con el texto de la anterior y la siguiente como contexto (la entonación fluye), usa los tiempos por letra que devuelve ElevenLabs para los subtítulos (exactos, sin Whisper) y ajusta la `duration` de cada escena. Ajustes: `ELEVENLABS_SPEED` (1.1 por defecto, máx. 1.2), `ELEVENLABS_MODEL` (`eleven_multilingual_v2`; `eleven_v3` es más expresivo). Este vídeo gasta unos 500 caracteres.
+
+Sin clave, `npm run video:tts` usa SVOX Pico en local (`apt-get install libttspico-utils`): sirve para probar, pero suena robótica.
 
 En `captions.json` una palabra escrita `*así*` se resalta siempre (también puedes editar a mano los subtítulos de Whisper).
 

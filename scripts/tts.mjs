@@ -1,22 +1,39 @@
-// Genera una voz sintética para remotion/video.json y sus subtítulos palabra a palabra.
-// Uso: npm run video:tts            (TTS_ENGINE=pico, TTS_TEMPO=1.12 por defecto)
+// Genera la voz de remotion/video.json y sus subtítulos palabra a palabra.
+//
+//   npm run video:tts                  ElevenLabs si hay ELEVENLABS_API_KEY (en .env.local),
+//                                      si no, SVOX Pico (voz local, suena robótica)
+//   TTS_ENGINE=elevenlabs|pico|espeak  para forzar uno
+//
+// ElevenLabs (voz tipo TikTok): ELEVENLABS_API_KEY, ELEVENLABS_VOICE_ID (voz de tu Voice Library),
+// ELEVENLABS_MODEL (eleven_multilingual_v2 por defecto), ELEVENLABS_SPEED (1.1). Devuelve el tiempo
+// de cada letra, así que los subtítulos salen exactos sin Whisper.
 //
 // Cada escena se sintetiza por separado, así que su `duration` pasa a ser la de su frase
-// (+ una pausa) y los subtítulos quedan sincronizados escena a escena. Dentro de cada frase,
-// las palabras se reparten según lo que dura cada una sintetizada sola.
-// Requiere ffmpeg y SVOX Pico (apt-get install libttspico-utils). Con TTS_ENGINE=espeak usa
-// espeak-ng (TTS_VOICE, TTS_SPEED), que suena peor.
+// (+ una pausa) y los subtítulos quedan sincronizados escena a escena.
+// Requiere ffmpeg. Pico: apt-get install libttspico-utils. espeak: espeak-ng.
 // Para tu propia voz usa `npm run video:transcribe` (Whisper) en su lugar.
 import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-const engine = process.env.TTS_ENGINE ?? "pico";
+const engine = process.env.TTS_ENGINE ?? (process.env.ELEVENLABS_API_KEY ? "elevenlabs" : "pico");
 const voice = process.env.TTS_VOICE ?? (engine === "pico" ? "es-ES" : "es");
 const speed = process.env.TTS_SPEED ?? "165";
 const tempo = process.env.TTS_TEMPO ?? "1.12";
-const GAP = 0.3; // pausa tras cada frase (s)
+// Pausa tras cada frase (s). ElevenLabs ya deja un respiro al final de cada clip.
+const GAP = Number(process.env.TTS_GAP ?? (engine === "elevenlabs" ? 0.08 : 0.3));
+const eleven = {
+  key: process.env.ELEVENLABS_API_KEY,
+  // "Adam", voz masculina prediseñada. Para acento de España elige una en la Voice Library.
+  voiceId: process.env.ELEVENLABS_VOICE_ID ?? "pNInz6obpgDQGcFmaJgB",
+  model: process.env.ELEVENLABS_MODEL ?? "eleven_multilingual_v2",
+  speed: Number(process.env.ELEVENLABS_SPEED ?? 1.1),
+};
+if (engine === "elevenlabs" && !eleven.key) {
+  console.error("Falta ELEVENLABS_API_KEY (ponla en .env.local).");
+  process.exit(1);
+}
 
 const root = process.cwd();
 const configPath = path.join(root, "remotion", "video.json");
@@ -42,16 +59,51 @@ const speak = (text, file) => {
   fs.rmSync(raw);
 };
 
-const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-const captions = [];
-const padded = [];
-let offset = 0;
-let aligned = 0;
+/**
+ * ElevenLabs: guarda el audio en `file` (wav) y devuelve [inicio, fin] en segundos de cada
+ * palabra, a partir de los tiempos por carácter de /with-timestamps.
+ */
+const speakEleven = async (text, file, previousText, nextText) => {
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${eleven.voiceId}/with-timestamps?output_format=mp3_44100_128`;
+  const body = {
+    text,
+    model_id: eleven.model,
+    voice_settings: { stability: 0.4, similarity_boost: 0.8, style: 0.35, use_speaker_boost: true, speed: eleven.speed },
+  };
+  // Contexto de las frases vecinas para que la entonación fluya entre escenas.
+  if (eleven.model !== "eleven_v3") {
+    if (previousText) body.previous_text = previousText;
+    if (nextText) body.next_text = nextText;
+  }
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "xi-api-key": eleven.key, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`ElevenLabs ${res.status}: ${await res.text()}`);
+  const json = await res.json();
+  const mp3 = `${file}.mp3`;
+  fs.writeFileSync(mp3, Buffer.from(json.audio_base64, "base64"));
+  run("ffmpeg", ["-y", "-v", "error", "-i", mp3, "-ar", "44100", "-ac", "1", file]);
+  fs.rmSync(mp3);
 
-config.scenes.forEach((scene, i) => {
-  // Palabras con su marca de resaltado (*palabra*).
+  const a = json.alignment;
+  const words = [];
+  let w = null;
+  a.characters.forEach((ch, k) => {
+    if (/\s/.test(ch)) {
+      if (w) words.push(w);
+      w = null;
+    } else if (!w) w = [a.character_start_times_seconds[k], a.character_end_times_seconds[k]];
+    else w[1] = a.character_end_times_seconds[k];
+  });
+  if (w) words.push(w);
+  return words;
+};
+
+const tokenize = (say) => {
   const tokens = [];
-  scene.say.split(/(\*[^*]+\*)/).forEach((chunk) => {
+  say.split(/(\*[^*]+\*)/).forEach((chunk) => {
     const hl = chunk.startsWith("*") && chunk.endsWith("*") && chunk.length > 2;
     (hl ? chunk.slice(1, -1) : chunk)
       .split(/\s+/)
@@ -61,9 +113,59 @@ config.scenes.forEach((scene, i) => {
         else tokens.push({ text: w, hl });
       });
   });
-  const plain = tokens.map((t) => t.text).join(" ");
+  return tokens;
+};
+const plainText = (say) => tokenize(say).map((t) => t.text).join(" ");
 
+const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+const captions = [];
+const padded = [];
+let offset = 0;
+let aligned = 0;
+
+const pushCaption = (tok, from, to) =>
+  captions.push({
+    text: ` ${tok.hl ? `*${tok.text}*` : tok.text}`,
+    startMs: Math.round((offset + from) * 1000),
+    endMs: Math.round((offset + to) * 1000),
+    timestampMs: Math.round((offset + (from + to) / 2) * 1000),
+    confidence: null,
+  });
+
+const finishScene = (scene, clip, clipDur) => {
+  scene.duration = Math.round((clipDur + GAP) * 100) / 100;
+  const out = path.join(tmp, `pad-${padded.length}.wav`);
+  run("ffmpeg", ["-y", "-v", "error", "-i", clip, "-af", "apad", "-t", String(scene.duration), "-ar", "44100", "-ac", "1", out]);
+  padded.push(out);
+  offset += scene.duration;
+};
+
+for (const [i, scene] of config.scenes.entries()) {
+  const tokens = tokenize(scene.say);
+  const plain = tokens.map((t) => t.text).join(" ");
   const clip = path.join(tmp, `scene-${i}.wav`);
+
+  if (engine === "elevenlabs") {
+    const prev = config.scenes[i - 1];
+    const next = config.scenes[i + 1];
+    const words = await speakEleven(plain, clip, prev && plainText(prev.say), next && plainText(next.say));
+    const clipDur = duration(clip);
+    if (words.length === tokens.length) {
+      tokens.forEach((tok, j) => pushCaption(tok, words[j][0], words[j][1]));
+      aligned++;
+    } else {
+      // No debería pasar: reparte en el tramo hablado.
+      const from = words[0]?.[0] ?? 0;
+      const to = words[words.length - 1]?.[1] ?? clipDur;
+      tokens.forEach((tok, j) =>
+        pushCaption(tok, from + ((to - from) * j) / tokens.length, from + ((to - from) * (j + 1)) / tokens.length),
+      );
+    }
+    finishScene(scene, clip, clipDur);
+    console.log(`  escena ${i + 1}/${config.scenes.length} ✓`);
+    continue;
+  }
+
   speak(plain, clip);
   const clipDur = duration(clip);
 
@@ -113,24 +215,13 @@ config.scenes.forEach((scene, i) => {
     for (const j of g.idx) {
       const tok = tokens[j];
       const len = (weights[j] / total) * (g.to - g.from);
-      captions.push({
-        text: ` ${tok.hl ? `*${tok.text}*` : tok.text}`,
-        startMs: Math.round((offset + t) * 1000),
-        endMs: Math.round((offset + t + len) * 1000),
-        timestampMs: Math.round((offset + t + len / 2) * 1000),
-        confidence: null,
-      });
+      pushCaption(tok, t, t + len);
       t += len;
     }
   }
   aligned += groups.length > 1 || phrases.length === 1 ? 1 : 0;
-
-  scene.duration = Math.round((clipDur + GAP) * 100) / 100;
-  const out = path.join(tmp, `pad-${i}.wav`);
-  run("ffmpeg", ["-y", "-v", "error", "-i", clip, "-af", "apad", "-t", String(scene.duration), "-ar", "44100", "-ac", "1", out]);
-  padded.push(out);
-  offset += scene.duration;
-});
+  finishScene(scene, clip, clipDur);
+}
 
 const list = path.join(tmp, "list.txt");
 fs.writeFileSync(list, padded.map((f) => `file '${f}'`).join("\n"));
@@ -153,6 +244,6 @@ config.captionsFile = "video/captions.json";
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n");
 fs.rmSync(tmp, { recursive: true, force: true });
 
-console.log(`Voz: public/video/voz.mp3 (${offset.toFixed(2)} s, ${engine} ${voice})`);
+console.log(`Voz: public/video/voz.mp3 (${offset.toFixed(2)} s, ${engine === "elevenlabs" ? `elevenlabs ${eleven.voiceId}` : `${engine} ${voice}`})`);
 console.log(`Escenas alineadas por frases: ${aligned}/${config.scenes.length}`);
 console.log(`Subtítulos: public/video/captions.json y captions.srt (${captions.length} palabras)`);
