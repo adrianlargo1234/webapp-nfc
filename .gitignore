@@ -63,3 +63,5 @@ supabase/.branches
 
 # whisper.cpp (binario y modelos)
 /whisper.cpp
+
+__pycache__/

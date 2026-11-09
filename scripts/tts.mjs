@@ -1,9 +1,17 @@
 // Genera la voz de remotion/video.json y sus subtítulos palabra a palabra.
 //
-//   npm run video:tts                  Azure si hay AZURE_SPEECH_KEY, si no ElevenLabs si hay
-//                                      ELEVENLABS_API_KEY (ambas en .env.local), si no SVOX Pico
-//                                      (voz local, suena robótica)
-//   TTS_ENGINE=azure|elevenlabs|pico|espeak  para forzar uno
+//   npm run video:tts   elige el primer motor disponible:
+//     1. azure       si hay AZURE_SPEECH_KEY (en .env.local)
+//     2. elevenlabs  si hay ELEVENLABS_API_KEY
+//     3. edge        gratis, sin cuenta: pip install edge-tts
+//     4. kokoro      gratis, sin cuenta, local: pip install kokoro soundfile
+//     5. pico        voz local robótica (apt-get install libttspico-utils)
+//   TTS_ENGINE=azure|elevenlabs|edge|kokoro|pico|espeak  para forzar uno.
+//   TTS_PYTHON=ruta/a/python  si edge-tts o kokoro están en otro Python (p. ej. un venv).
+//
+// edge: EDGE_VOICE (es-ES-AlvaroNeural), EDGE_RATE (+12%). Mismas voces que Azure y tiempo exacto
+// de cada palabra. Usa el servicio "Leer en voz alta" de Edge: no es oficial y puede dejar de ir.
+// kokoro: KOKORO_VOICE (em_alex; también em_santa, ef_dora), KOKORO_SPEED (1.1). Apache 2.0.
 //
 // Azure (barata, capa gratis): AZURE_SPEECH_KEY, AZURE_SPEECH_REGION, AZURE_SPEECH_VOICE
 // (es-ES-AlvaroNeural), AZURE_SPEECH_RATE (+12%), AZURE_SPEECH_PITCH, AZURE_SPEECH_STYLE.
@@ -23,14 +31,25 @@ import os from "node:os";
 import path from "node:path";
 import { azureConfigFromEnv, speakAzure } from "./tts-azure.mjs";
 
+const python = process.env.TTS_PYTHON ?? (process.platform === "win32" ? "python" : "python3");
+const hasPython = (mod) => spawnSync(python, ["-c", `import ${mod}`], { stdio: "ignore" }).status === 0;
 const engine =
   process.env.TTS_ENGINE ??
-  (process.env.AZURE_SPEECH_KEY ? "azure" : process.env.ELEVENLABS_API_KEY ? "elevenlabs" : "pico");
+  (process.env.AZURE_SPEECH_KEY
+    ? "azure"
+    : process.env.ELEVENLABS_API_KEY
+      ? "elevenlabs"
+      : hasPython("edge_tts")
+        ? "edge"
+        : hasPython("kokoro")
+          ? "kokoro"
+          : "pico");
 const voice = process.env.TTS_VOICE ?? (engine === "pico" ? "es-ES" : "es");
 const speed = process.env.TTS_SPEED ?? "165";
 const tempo = process.env.TTS_TEMPO ?? "1.12";
 // Pausa tras cada frase (s). ElevenLabs ya deja un respiro al final de cada clip.
-const neural = engine === "elevenlabs" || engine === "azure";
+// Motores que dan el tiempo exacto de cada palabra.
+const neural = engine === "elevenlabs" || engine === "azure" || engine === "edge";
 const GAP = Number(process.env.TTS_GAP ?? (neural ? 0.08 : 0.3));
 const eleven = {
   key: process.env.ELEVENLABS_API_KEY,
@@ -49,6 +68,9 @@ if (engine === "azure" && (!azure.key || !azure.region)) {
   process.exit(1);
 }
 const azureSdk = engine === "azure" ? await import("microsoft-cognitiveservices-speech-sdk") : null;
+if (engine === "edge") {
+  console.log("Aviso: edge-tts usa el servicio de lectura de Microsoft Edge, que no es oficial.");
+}
 
 const root = process.cwd();
 const configPath = path.join(root, "remotion", "video.json");
@@ -133,6 +155,37 @@ const tokenize = (say) => {
 const plainText = (say) => tokenize(say).map((t) => t.text).join(" ");
 
 const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+
+// edge y kokoro: todas las escenas en una sola llamada a Python (Kokoro carga el modelo una vez).
+const pythonResults = [];
+if (engine === "edge" || engine === "kokoro") {
+  const job = {
+    engine,
+    voice: engine === "edge" ? (process.env.EDGE_VOICE ?? "es-ES-AlvaroNeural") : (process.env.KOKORO_VOICE ?? "em_alex"),
+    rate: engine === "edge" ? (process.env.EDGE_RATE ?? "+12%") : (process.env.KOKORO_SPEED ?? "1.1"),
+    items: config.scenes.map((scene, i) => ({
+      text: plainText(scene.say),
+      out: path.join(tmp, `raw-${i}.${engine === "edge" ? "mp3" : "wav"}`),
+    })),
+  };
+  console.log(`Generando ${job.items.length} escenas con ${engine} (${job.voice})…`);
+  const res = spawnSync(python, [path.join(root, "scripts", "tts_local.py")], {
+    input: JSON.stringify(job),
+    encoding: "utf8",
+    stdio: ["pipe", "pipe", "inherit"],
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  if (res.status !== 0) {
+    console.error(`Falló ${engine}. ¿Está instalado? (${engine === "edge" ? "pip install edge-tts" : "pip install kokoro soundfile"})`);
+    process.exit(1);
+  }
+  JSON.parse(res.stdout).forEach((r, i) => {
+    const clip = path.join(tmp, `scene-${i}.wav`);
+    run("ffmpeg", ["-y", "-v", "error", "-i", job.items[i].out, "-ar", "44100", "-ac", "1", clip]);
+    pythonResults.push({ clip, words: r.words });
+  });
+}
+
 const captions = [];
 const padded = [];
 let offset = 0;
@@ -164,9 +217,11 @@ for (const [i, scene] of config.scenes.entries()) {
     const prev = config.scenes[i - 1];
     const next = config.scenes[i + 1];
     const words =
-      engine === "azure"
-        ? await speakAzure(plain, clip, azure, azureSdk.default ?? azureSdk)
-        : await speakEleven(plain, clip, prev && plainText(prev.say), next && plainText(next.say));
+      engine === "edge"
+        ? (fs.copyFileSync(pythonResults[i].clip, clip), pythonResults[i].words)
+        : engine === "azure"
+          ? await speakAzure(plain, clip, azure, azureSdk.default ?? azureSdk)
+          : await speakEleven(plain, clip, prev && plainText(prev.say), next && plainText(next.say));
     const clipDur = duration(clip);
     if (words.length === tokens.length) {
       tokens.forEach((tok, j) => pushCaption(tok, words[j][0], words[j][1]));
@@ -184,11 +239,14 @@ for (const [i, scene] of config.scenes.entries()) {
     continue;
   }
 
-  speak(plain, clip);
+  if (engine === "kokoro") fs.copyFileSync(pythonResults[i].clip, clip);
+  else speak(plain, clip);
   const clipDur = duration(clip);
 
-  // Peso de cada palabra = lo que dura sintetizada sola.
+  // Peso de cada palabra = lo que dura sintetizada sola (Kokoro: su longitud, para no
+  // sintetizar palabra a palabra).
   const weights = tokens.map((t, j) => {
+    if (engine === "kokoro") return t.text.length + 2;
     const f = path.join(tmp, `w-${i}-${j}.wav`);
     speak(t.text.replace(/[¿¡]/g, ""), f);
     return Math.max(duration(f), 0.08);
@@ -262,6 +320,6 @@ config.captionsFile = "video/captions.json";
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n");
 fs.rmSync(tmp, { recursive: true, force: true });
 
-console.log(`Voz: public/video/voz.mp3 (${offset.toFixed(2)} s, ${engine === "elevenlabs" ? `elevenlabs ${eleven.voiceId}` : engine === "azure" ? `azure ${azure.voice}` : `${engine} ${voice}`})`);
+console.log(`Voz: public/video/voz.mp3 (${offset.toFixed(2)} s, ${engine === "elevenlabs" ? `elevenlabs ${eleven.voiceId}` : engine === "azure" ? `azure ${azure.voice}` : engine === "edge" || engine === "kokoro" ? engine : `${engine} ${voice}`})`);
 console.log(`Escenas alineadas por frases: ${aligned}/${config.scenes.length}`);
 console.log(`Subtítulos: public/video/captions.json y captions.srt (${captions.length} palabras)`);

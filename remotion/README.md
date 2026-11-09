@@ -47,6 +47,27 @@ Sin audio (`"audio": null`), los subtítulos se generan a partir de `say`, repar
 
 Las fuentes (Poppins, Instrument Serif y JetBrains Mono, licencia OFL) están en `public/video/fonts`, así que se renderiza sin conexión.
 
+## Voz gratis, sin cuenta ni tarjeta
+
+`npm run video:tts` usa automáticamente la primera que encuentre instalada (si no hay claves de Azure ni ElevenLabs):
+
+**edge-tts (recomendada para probar):** las mismas voces neuronales de Microsoft que Azure, con el tiempo exacto de cada palabra.
+```bash
+pip install edge-tts
+npm run video:tts && npm run video:render
+```
+Voz y ritmo: `EDGE_VOICE=es-ES-AlvaroNeural` (por defecto), `EDGE_RATE=+12%`. Lista de voces: `edge-tts --list-voices | grep es-`.
+Ojo: usa el servicio de "Leer en voz alta" de Microsoft Edge, que no es una API oficial; puede dejar de funcionar y no está claro que permita uso comercial.
+
+**Kokoro:** modelo abierto (licencia Apache 2.0, uso comercial permitido) que corre en tu ordenador. La primera vez descarga el modelo (~300 MB) y necesita `espeak-ng` instalado.
+```bash
+pip install kokoro soundfile
+TTS_ENGINE=kokoro npm run video:tts && npm run video:render
+```
+Voces en español: `KOKORO_VOICE=em_alex` (por defecto), `em_santa`, `ef_dora`. Velocidad: `KOKORO_SPEED=1.1`. Kokoro no da el tiempo de cada palabra en español: cada frase se sincroniza con su tramo de voz y las palabras se reparten dentro.
+
+Si instalaste los paquetes en un entorno virtual, indica su Python con `TTS_PYTHON=ruta/al/python`.
+
 ## Voz con IA barata (Azure Speech, recomendado)
 
 Voces neuronales de Microsoft con capa gratuita mensual (de sobra para estos vídeos) y tiempo exacto de cada palabra, así que los subtítulos salen sin Whisper.
